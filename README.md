@@ -15,22 +15,22 @@ Sistem manajemen media dan pengguna menggunakan arsitektur microservices dengan 
 - Konfigurasi kredensial pada file .env di masing-masing direktori service.
 
 ### 2. Service User (Port 5000)
-cd service-user
-npm install
-npx sequelize-cli db:migrate
-npx sequelize-cli db:seed:all
+cd service-user<br />
+npm install<br />
+npx sequelize-cli db:migrate<br />
+npx sequelize-cli db:seed:all<br />
 npm run dev
 
 ### 3. Service Media (Port 8080)
-cd service-media
-npm install
-npx sequelize-cli db:migrate
+cd service-media<br />
+npm install<br />
+npx sequelize-cli db:migrate<br />
 npm run dev
 
 ### 4. API Gateway (Port 3000)
-cd api-gateway
-npm install
-npm run dev
+cd api-gateway<br />
+npm install<br />
+npm run dev<br />
 
 ## API Endpoints (Gateway)
 
