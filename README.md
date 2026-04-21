@@ -1,50 +1,53 @@
-# Microservices Image Management
+# Microservices Image & User Management
 
-Proyek arsitektur microservices menggunakan Node.js dan Express untuk pengelolaan media.
+Sistem manajemen media dan pengguna menggunakan arsitektur microservices dengan Node.js dan Express.
 
-## Struktur
-1. API Gateway (Port 3000): Entry point utama dan routing request ke service terkait.
-2. Service Media (Port 8080): Validasi Base64, manajemen file lokal, dan database metadata.
+## Struktur Layanan
+- API Gateway (Port 3000): Entry point utama dan routing request.
+- Service User (Port 5000): Manajemen data pengguna dan autentikasi.
+- Service Media (Port 8080): Validasi Base64 dan pengelolaan file gambar lokal.
 
-## Instalasi
+## Panduan Instalasi
 
-### 1. Persiapan Awal
-- Clone repositori ini.
-- Pastikan MySQL sudah terinstal dan berjalan.
+### 1. Database
+- Gunakan MySQL.
+- Buat database terpisah untuk service-user dan service-media.
+- Konfigurasi kredensial pada file .env di masing-masing direktori service.
 
-### 2. Service Media
-1. Masuk ke direktori `service-media`.
-2. Jalankan `npm install`.
-3. Buat file `.env` berdasarkan `.env.example`.
-4. Jalankan migrasi database: `npx sequelize-cli db:migrate`.
-5. Jalankan aplikasi: `npm run dev`.
+### 2. Service User (Port 5000)
+cd service-user
+npm install
+npx sequelize-cli db:migrate
+npx sequelize-cli db:seed:all
+npm run dev
 
-### 3. API Gateway
-1. Masuk ke direktori `api-gateway`.
-2. Jalankan `npm install`.
-3. Buat file `.env` berdasarkan `.env.example`.
-4. Pastikan variabel `URL_SERVICE_MEDIA` mengarah ke `http://localhost:8080`.
-5. Jalankan aplikasi: `npm run dev`.
+### 3. Service Media (Port 8080)
+cd service-media
+npm install
+npx sequelize-cli db:migrate
+npm run dev
+
+### 4. API Gateway (Port 3000)
+cd api-gateway
+npm install
+npm run dev
 
 ## API Endpoints (Gateway)
-| Method | Endpoint | Deskripsi | Payload (JSON) |
-| :--- | :--- | :--- | :--- |
-| POST | /media | Upload gambar | {"image": "data:image/png;base64,..."} |
-| GET | /media | List semua gambar | - |
-| DELETE | /media/:id | Hapus gambar by ID | - |
 
-## Tech Stack
-- Runtime: Node.js
-- Framework: Express.js
-- ORM: Sequelize
-- Database: MySQL
-- HTTP Client: Axios
-- Validation: is-base64
+| Method | Endpoint | Deskripsi |
+| :--- | :--- | :--- |
+| POST | /users/register | Registrasi pengguna baru |
+| POST | /users/login | Autentikasi pengguna |
+| POST | /users/logout | Keluar dari sistem |
+| POST | /refresh-tokens | Manajemen token sesi |
+| POST | /media | Upload gambar (Base64) |
+| GET | /media | List data media |
+| DELETE | /media/:id | Hapus media berdasarkan ID |
 
-## Catatan
-- Gunakan `path.join` untuk kompatibilitas path di lintas sistem operasi (Windows/Linux).
-- Pastikan direktori `service-media/public/images` tersedia untuk penyimpanan file.
-- Kapasitas payload JSON diset maksimal 50MB untuk mendukung ukuran string Base64 yang besar.
+## Note
+- Batas maksimal payload JSON adalah 50MB untuk mendukung transfer data Base64.
+- Penyimpanan file fisik berada pada direktori service-media/public/images.
+- Implementasi path menggunakan path.join untuk menjamin kompatibilitas lintas sistem operasi.
 
 ---
 Aldo Rifki Firmansyah - Universitas Jember
