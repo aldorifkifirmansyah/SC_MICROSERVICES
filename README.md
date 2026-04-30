@@ -1,53 +1,73 @@
-# Microservices Image & User Management
+# Microservices Management System
 
-Sistem manajemen media dan pengguna menggunakan arsitektur microservices dengan Node.js dan Express.
+Sistem manajemen terdistribusi yang terdiri dari API Gateway, Manajemen Pengguna, Pengelolaan Media, dan Pencatatan Kehadiran menggunakan Node.js dan Express.
 
-## Struktur Layanan
-- API Gateway (Port 3000): Entry point utama dan routing request.
-- Service User (Port 5000): Manajemen data pengguna dan autentikasi.
-- Service Media (Port 8080): Validasi Base64 dan pengelolaan file gambar lokal.
+## Arsitektur Layanan
 
-## Panduan Instalasi
+- API Gateway (Port 3000): Entry point utama dan routing request antar layanan.
+- Service User (Port 5000): Manajemen data pengguna, autentikasi, dan refresh token.
+- Service Media (Port 8080): Validasi Base64 dan penyimpanan file gambar lokal.
+- Service Kehadiran (Port 4000): Manajemen data presensi (CRUD).
 
-### 1. Database
-- Gunakan MySQL.
-- Buat database terpisah untuk service-user dan service-media.
-- Konfigurasi kredensial pada file .env di masing-masing direktori service.
+## Panduan Instalasi Cepat
 
-### 2. Service User (Port 5000)
-cd service-user<br />
-npm install<br />
-npx sequelize-cli db:migrate<br />
-npx sequelize-cli db:seed:all<br />
-npm run dev
+Jalankan perintah berikut pada terminal di direktori root untuk menginstal seluruh dependensi dan menjalankan migrasi database dalam satu proses:
 
-### 3. Service Media (Port 8080)
-cd service-media<br />
-npm install<br />
-npx sequelize-cli db:migrate<br />
-npm run dev
+```bash
+cd service-user && npm install && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && cd ../service-media && npm install && npx sequelize-cli db:migrate && cd ../service-kehadiran && npm install && npx sequelize-cli db:migrate && cd ../api-gateway && npm install && cd ..
+```
 
-### 4. API Gateway (Port 3000)
-cd api-gateway<br />
-npm install<br />
-npm run dev<br />
+## Menjalankan Layanan
 
-## API Endpoints (Gateway)
+Gunakan terminal terpisah untuk menjalankan setiap layanan berikut:
 
-| Method | Endpoint | Deskripsi |
-| :--- | :--- | :--- |
-| POST | /users/register | Registrasi pengguna baru |
-| POST | /users/login | Autentikasi pengguna |
-| POST | /users/logout | Keluar dari sistem |
-| POST | /refresh-tokens | Manajemen token sesi |
-| POST | /media | Upload gambar (Base64) |
-| GET | /media | List data media |
-| DELETE | /media/:id | Hapus media berdasarkan ID |
+# Terminal 1 (User Service)
 
-## Note
-- Batas maksimal payload JSON adalah 50MB untuk mendukung transfer data Base64.
-- Penyimpanan file fisik berada pada direktori service-media/public/images.
-- Implementasi path menggunakan path.join untuk menjamin kompatibilitas lintas sistem operasi.
+```bash
+cd service-user && npm run dev
+```
+
+# Terminal 2 (Media Service)
+
+```bash
+cd service-media && npm run dev
+```
+
+# Terminal 3 (Kehadiran Service)
+
+```bash
+cd service-kehadiran && npm run dev
+```
+
+# Terminal 4 (API Gateway)
+
+```bash
+cd api-gateway && npm run dev
+```
+
+## API Endpoints (Gateway Port 3000)
+
+| Method | Endpoint        | Deskripsi                            |
+| :----- | :-------------- | :----------------------------------- |
+| POST   | /users/register | Registrasi pengguna baru             |
+| POST   | /users/login    | Autentikasi pengguna                 |
+| POST   | /users/logout   | Keluar dari sistem                   |
+| POST   | /refresh-tokens | Manajemen token sesi                 |
+| POST   | /media          | Upload gambar (Base64)               |
+| GET    | /media          | List data media                      |
+| DELETE | /media/:id      | Hapus media berdasarkan ID           |
+| POST   | /kehadiran      | Tambah data kehadiran baru           |
+| GET    | /kehadiran      | List semua data kehadiran            |
+| PUT    | /kehadiran/:id  | Update data kehadiran berdasarkan ID |
+| DELETE | /kehadiran/:id  | Hapus data kehadiran berdasarkan ID  |
+
+## Notes
+
+- Payload JSON dibatasi maksimal 50MB untuk mendukung transfer data Base64.
+- Penyimpanan file fisik dilakukan pada direktori service-media/public/images.
+- Implementasi manajemen path menggunakan path.join untuk kompatibilitas lintas sistem operasi.
+- Pastikan konfigurasi .env pada setiap direktori layanan telah disesuaikan sebelum menjalankan perintah migrasi.
 
 ---
+
 Aldo Rifki Firmansyah - Universitas Jember
