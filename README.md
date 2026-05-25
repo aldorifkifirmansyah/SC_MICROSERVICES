@@ -1,72 +1,163 @@
 # Microservices Management System
 
-Sistem manajemen terdistribusi yang terdiri dari API Gateway, Manajemen Pengguna, Pengelolaan Media, dan Pencatatan Kehadiran menggunakan Node.js dan Express.
+Sistem manajemen terdistribusi berbasis microservices yang terdiri dari API Gateway, Service User, Service Media, Service Kehadiran, dan Service Mentor menggunakan Node.js, Express, dan Laravel.
 
-## Arsitektur Layanan
+---
 
-- API Gateway (Port 3000): Entry point utama dan routing request antar layanan.
-- Service User (Port 5000): Manajemen data pengguna, autentikasi, dan refresh token.
-- Service Media (Port 8080): Validasi Base64 dan penyimpanan file gambar lokal.
-- Service Kehadiran (Port 4000): Manajemen data presensi (CRUD).
+# Arsitektur Layanan
 
-## Panduan Instalasi Cepat
+| Service | Port | Deskripsi |
+| :--- | :--- | :--- |
+| API Gateway | 3000 | Entry point utama dan routing request antar layanan |
+| Service User | 5000 | Manajemen pengguna, autentikasi, dan refresh token |
+| Service Media | 8080 | Validasi Base64 dan penyimpanan file gambar |
+| Service Kehadiran | 4000 | Manajemen data presensi (CRUD) |
+| Service Mentor (Laravel) | 8000 | Manajemen data mentor berbasis Laravel |
 
-Jalankan perintah berikut pada terminal di direktori root untuk menginstal seluruh dependensi dan menjalankan migrasi database dalam satu proses:
+---
 
-```bash
-cd service-user && npm install && npx sequelize-cli db:migrate && npx sequelize-cli db:seed:all && cd ../service-media && npm install && npx sequelize-cli db:migrate && cd ../service-kehadiran && npm install && npx sequelize-cli db:migrate && cd ../api-gateway && npm install && cd ..
-```
+# Prasyarat
 
-## Menjalankan Layanan
+Sebelum menjalankan proyek, pastikan:
 
-Gunakan terminal terpisah untuk menjalankan setiap layanan berikut:
+- MySQL telah berjalan pada perangkat lokal.
+- Membuat 4 database lokal untuk masing-masing layanan:
+  - `service_user`
+  - `service_media`
+  - `service_kehadiran`
+  - `service_mentor`
+- Seluruh file `.env` pada setiap service telah dikonfigurasi dengan benar.
 
-# Terminal 1 (User Service)
+---
 
-```bash
-cd service-user && npm run dev
-```
+# Panduan Instalasi
 
-# Terminal 2 (Media Service)
+## Install Dependency Node.js Services
 
-```bash
-cd service-media && npm run dev
-```
-
-# Terminal 3 (Kehadiran Service)
-
-```bash
-cd service-kehadiran && npm run dev
-```
-
-# Terminal 4 (API Gateway)
+Jalankan perintah berikut dari direktori root project:
 
 ```bash
-cd api-gateway && npm run dev
+npm install --prefix service-user
+npm install --prefix service-media
+npm install --prefix service-kehadiran
+npm install --prefix api-gateway
 ```
 
-## API Endpoints (Gateway Port 3000)
+## Install Dependency Laravel Service Mentor
 
-| Method | Endpoint        | Deskripsi                            |
-| :----- | :-------------- | :----------------------------------- |
-| POST   | /users/register | Registrasi pengguna baru             |
-| POST   | /users/login    | Autentikasi pengguna                 |
-| POST   | /users/logout   | Keluar dari sistem                   |
-| POST   | /refresh-tokens | Manajemen token sesi                 |
-| POST   | /media          | Upload gambar (Base64)               |
-| GET    | /media          | List data media                      |
-| DELETE | /media/:id      | Hapus media berdasarkan ID           |
-| POST   | /kehadiran      | Tambah data kehadiran baru           |
-| GET    | /kehadiran      | List semua data kehadiran            |
-| PUT    | /kehadiran/:id  | Update data kehadiran berdasarkan ID |
-| DELETE | /kehadiran/:id  | Hapus data kehadiran berdasarkan ID  |
+```bash
+cd service-mentor
+composer install
+```
 
-## Notes
+## Menjalankan Migrasi Database
 
-- Payload JSON dibatasi maksimal 50MB untuk mendukung transfer data Base64.
-- Penyimpanan file fisik dilakukan pada direktori service-media/public/images.
-- Implementasi manajemen path menggunakan path.join untuk kompatibilitas lintas sistem operasi.
-- Pastikan konfigurasi .env pada setiap direktori layanan telah disesuaikan sebelum menjalankan perintah migrasi.
+### Service User
+
+```bash
+cd service-user
+npx sequelize-cli db:migrate
+npx sequelize-cli db:seed:all
+```
+
+### Service Media
+
+```bash
+cd service-media
+npx sequelize-cli db:migrate
+```
+
+### Service Kehadiran
+
+```bash
+cd service-kehadiran
+npx sequelize-cli db:migrate
+```
+
+### Service Mentor (Laravel)
+
+```bash
+cd service-mentor
+php artisan migrate
+```
+
+---
+
+# Menjalankan Layanan
+
+Gunakan terminal terpisah untuk setiap layanan berikut:
+
+## Terminal 1: Service User
+
+```bash
+cd service-user
+npm run dev
+```
+
+## Terminal 2: Service Media
+
+```bash
+cd service-media
+npm run dev
+```
+
+## Terminal 3: Service Kehadiran
+
+```bash
+cd service-kehadiran
+npm run dev
+```
+
+## Terminal 4: API Gateway
+
+```bash
+cd api-gateway
+npm run dev
+```
+
+## Terminal 5: Service Mentor (Laravel)
+
+```bash
+cd service-mentor
+php artisan serve --port=8000
+```
+
+---
+
+# API Endpoints
+
+| Method | Endpoint | Deskripsi | Service Asal |
+| :--- | :--- | :--- | :--- |
+| POST | `/users/register` | Registrasi pengguna baru | Service User |
+| POST | `/users/login` | Autentikasi pengguna | Service User |
+| POST | `/users/logout` | Keluar dari sistem | Service User |
+| POST | `/refresh-tokens` | Manajemen refresh token | Service User |
+| POST | `/media` | Upload gambar Base64 | Service Media |
+| GET | `/media` | List seluruh media | Service Media |
+| DELETE | `/media/:id` | Hapus media berdasarkan ID | Service Media |
+| POST | `/kehadiran` | Tambah data kehadiran | Service Kehadiran |
+| GET | `/kehadiran` | List seluruh data kehadiran | Service Kehadiran |
+| PUT | `/kehadiran/:id` | Update data kehadiran | Service Kehadiran |
+| DELETE | `/kehadiran/:id` | Hapus data kehadiran | Service Kehadiran |
+| GET | `/mentors` | List seluruh mentor | Service Mentor |
+| GET | `/mentors/:id` | Detail mentor berdasarkan ID | Service Mentor |
+| POST | `/mentors` | Tambah data mentor baru | Service Mentor |
+| PUT | `/mentors/:id` | Update data mentor | Service Mentor |
+| DELETE | `/mentors/:id` | Hapus data mentor | Service Mentor |
+
+---
+
+# Catatan Penting
+
+- Payload JSON dibatasi maksimal **50MB** untuk mendukung transfer data gambar dalam format Base64.
+- Penyimpanan file media dilakukan secara lokal pada direktori:
+
+```bash
+service-media/public/images
+```
+
+- Implementasi path menggunakan `path.join()` untuk memastikan kompatibilitas lintas sistem operasi.
+- Pastikan seluruh service berjalan sebelum mengakses API Gateway.
 
 ---
 

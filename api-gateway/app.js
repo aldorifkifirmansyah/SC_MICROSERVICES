@@ -9,6 +9,7 @@ const indexRouter = require("./routes/index");
 const mediaRouter = require("./routes/media");
 const usersRouter = require("./routes/users");
 const kehadiranRouter = require("./routes/kehadiran");
+const mentorRouter = require("./routes/mentors");
 
 const app = express();
 
@@ -26,6 +27,7 @@ app.use("/", indexRouter);
 app.use("/users", usersRouter);
 app.use("/media", mediaRouter);
 app.use("/kehadiran", kehadiranRouter);
+app.use("/mentors", mentorRouter);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
